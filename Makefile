@@ -3,7 +3,7 @@
 #
 
 # CC
-//指定gcc程序，即用gcc编译
+#指定gcc程序，即用gcc编译
 CC=gcc
 # Path to parent kernel include files directory
 #文件路径
