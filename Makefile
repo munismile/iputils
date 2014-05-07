@@ -3,12 +3,16 @@
 #
 
 # CC
+//指定gcc程序，即用gcc编译
 CC=gcc
 # Path to parent kernel include files directory
+#文件路径
 LIBC_INCLUDE=/usr/include
 # Libraries
+#函数库
 ADDLIB=
 # Linker flags
+#链接器标志
 LDFLAG_STATIC=-Wl,-Bstatic
 LDFLAG_DYNAMIC=-Wl,-Bdynamic
 LDFLAG_CAP=-lcap
@@ -18,11 +22,13 @@ LDFLAG_IDN=-lidn
 LDFLAG_RESOLV=-lresolv
 LDFLAG_SYSFS=-lsysfs
 
+#“#”字符后的内容被作为是注释内容（和shell脚本一样）处理。如果此行的第一个非空字符为"#"，那么此行为注释行，注释行的结尾如果存在反斜线（\），那么下一行也被作为注释行。一般在书写Makefile时推荐将注释作为一个独立的行，而不要和Makefile的有效行放在一行中书写。当在Makefile中需要使用字符"#"时，可以使用反斜线加"#"（\#）来实现，其表示将"#"作为一字符而不是注释的开始标志。
 #
 # Options
 #
 
 # Capability support (with libcap) [yes|static|no]
+#变量定义，设置开关
 USE_CAP=yes
 # sysfs support (with libsysfs - deprecated) [no|yes|static]
 USE_SYSFS=no
@@ -49,6 +55,7 @@ ENABLE_RDISC_SERVER=no
 # -------------------------------------
 # What a pity, all new gccs are buggy and -Werror does not work. Sigh.
 # CCOPT=-fno-strict-aliasing -Wstrict-prototypes -Wall -Werror -g
+#-Wstrict-prototypes: 如果函数的声明或定义没有指出参数类型，编译器就发出警告
 CCOPT=-fno-strict-aliasing -Wstrict-prototypes -Wall -g
 CCOPTOPT=-O3
 GLIBCFIX=-D_GNU_SOURCE
@@ -131,6 +138,12 @@ all: $(TARGETS)
 	$(COMPILE.c) $< $(DEF_$(patsubst %.o,%,$@)) -o $@
 $(TARGETS): %: %.o
 	$(LINK.o) $^ $(LIB_$@) $(LDLIBS) -o $@
+#COMPILE.c=$(CC) $(CFLAGS) $(CPPFLAGS) -c
+# $< 依赖目标中的第一个目标名字 
+# $@ 表示目标
+# $^ 所有的依赖目标的集合 
+# 在$(patsubst %.o,%,$@ )中，patsubst把目标中的变量符合后缀是.o的全部删除,  DEF_ping
+# LINK.o把.o文件链接在一起的命令行,缺省值是$(CC) $(LDFLAGS) $(TARGET_ARCH)
 
 # -------------------------------------
 # arping
