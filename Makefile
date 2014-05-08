@@ -60,18 +60,20 @@ ENABLE_RDISC_SERVER=no
 
 # -------------------------------------
 # What a pity, all new gccs are buggy and -Werror does not work. Sigh.
-# CCOPT=-fno-strict-aliasing -Wstrict-prototypes -Wall -Werror -g
 #-Wstrict-prototypes: 如果函数的声明或定义没有指出参数类型，编译器就发出警告
 CCOPT=-fno-strict-aliasing -Wstrict-prototypes -Wall -g
+#使用三级优化
 CCOPTOPT=-O3
+#-D是GCC的参数，后面是一个宏，遵守GNU标准
 GLIBCFIX=-D_GNU_SOURCE
 DEFINES=
 LDLIB=
-
+#符号“$”表示变量或者函数的引用,函数库支持动态静态链接
 FUNC_LIB = $(if $(filter static,$(1)),$(LDFLAG_STATIC) $(2) $(LDFLAG_DYNAMIC),$(2))
 
 # USE_GNUTLS: DEF_GNUTLS, LIB_GNUTLS
 # USE_CRYPTO: LIB_CRYPTO
+#判断要加密解密函数库的函数是否重复
 ifneq ($(USE_GNUTLS),no)
 	LIB_CRYPTO = $(call FUNC_LIB,$(USE_GNUTLS),$(LDFLAG_GNUTLS))
 	DEF_CRYPTO = -DUSE_GNUTLS
@@ -80,37 +82,44 @@ else
 endif
 
 # USE_RESOLV: LIB_RESOLV
+#使用解析库
 LIB_RESOLV = $(call FUNC_LIB,$(USE_RESOLV),$(LDFLAG_RESOLV))
 
 # USE_CAP:  DEF_CAP, LIB_CAP
+#判断CAP函数库中的函数是否重复
 ifneq ($(USE_CAP),no)
 	DEF_CAP = -DCAPABILITIES
 	LIB_CAP = $(call FUNC_LIB,$(USE_CAP),$(LDFLAG_CAP))
 endif
 
 # USE_SYSFS: DEF_SYSFS, LIB_SYSFS
+#判断sysfs接口函数库中的函数是否重复
 ifneq ($(USE_SYSFS),no)
 	DEF_SYSFS = -DUSE_SYSFS
 	LIB_SYSFS = $(call FUNC_LIB,$(USE_SYSFS),$(LDFLAG_SYSFS))
 endif
 
 # USE_IDN: DEF_IDN, LIB_IDN
+#判断idn恒等函数库中的函数是否重复
 ifneq ($(USE_IDN),no)
 	DEF_IDN = -DUSE_IDN
 	LIB_IDN = $(call FUNC_LIB,$(USE_IDN),$(LDFLAG_IDN))
 endif
 
 # WITHOUT_IFADDRS: DEF_WITHOUT_IFADDRS
+#判断是否使用了ifaddrs函数接口
 ifneq ($(WITHOUT_IFADDRS),no)
 	DEF_WITHOUT_IFADDRS = -DWITHOUT_IFADDRS
 endif
 
 # ENABLE_RDISC_SERVER: DEF_ENABLE_RDISC_SERVER
+#判断是否使用了RDISC工具
 ifneq ($(ENABLE_RDISC_SERVER),no)
 	DEF_ENABLE_RDISC_SERVER = -DRDISC_SERVER
 endif
 
 # ENABLE_PING6_RTHDR: DEF_ENABLE_PING6_RTHDR
+#判断是否使用了PING6命令
 ifneq ($(ENABLE_PING6_RTHDR),no)
 	DEF_ENABLE_PING6_RTHDR = -DPING6_ENABLE_RTHDR
 ifeq ($(ENABLE_PING6_RTHDR),RFC3542)
@@ -134,6 +143,7 @@ TAG:=$(shell date --date=$(TODAY) +s%Y%m%d)
 
 
 # -------------------------------------
+#.PHONY表示产生伪目标文件
 .PHONY: all ninfod clean distclean man html check-kernel modules snapshot
 
 all: $(TARGETS)
@@ -153,6 +163,7 @@ $(TARGETS): %: %.o
 
 # -------------------------------------
 # arping
+#向相邻主机发送ARP请求
 DEF_arping = $(DEF_SYSFS) $(DEF_CAP) $(DEF_IDN) $(DEF_WITHOUT_IFADDRS)
 LIB_arping = $(LIB_SYSFS) $(LIB_CAP) $(LIB_IDN)
 
@@ -161,10 +172,12 @@ DEF_arping += -DDEFAULT_DEVICE=\"$(ARPING_DEFAULT_DEVICE)\"
 endif
 
 # clockdiff
+
 DEF_clockdiff = $(DEF_CAP)
 LIB_clockdiff = $(LIB_CAP)
 
 # ping / ping6
+#测试计算机名和计算机的ip地址，验证远程登录
 DEF_ping_common = $(DEF_CAP) $(DEF_IDN)
 DEF_ping  = $(DEF_CAP) $(DEF_IDN) $(DEF_WITHOUT_IFADDRS)
 LIB_ping  = $(LIB_CAP) $(LIB_IDN)
@@ -175,19 +188,19 @@ ping: ping_common.o
 ping6: ping_common.o
 ping.o ping_common.o: ping_common.h
 ping6.o: ping_common.h in6_flowlabel.h
-
+#逆地址解析协议的服务端程序。定义了两个预留变量
 # rarpd
 DEF_rarpd =
 LIB_rarpd =
-
+#路由表更新程序。定义了一个预留变量
 # rdisc
 DEF_rdisc = $(DEF_ENABLE_RDISC_SERVER)
 LIB_rdisc =
-
+#路由追踪路径
 # tracepath
 DEF_tracepath = $(DEF_IDN)
 LIB_tracepath = $(LIB_IDN)
-
+#ipv6的路由追踪路径
 # tracepath6
 DEF_tracepath6 = $(DEF_IDN)
 LIB_tracepath6 =
@@ -197,15 +210,19 @@ DEF_traceroute6 = $(DEF_CAP) $(DEF_IDN)
 LIB_traceroute6 = $(LIB_CAP) $(LIB_IDN)
 
 # tftpd
+#简单文本传输协议
 DEF_tftpd =
 DEF_tftpsubs =
 LIB_tftpd =
 
+#tftpd依赖tftpsus.o文件
 tftpd: tftpsubs.o
+#tftpd.o和tftpsubs.o文件依赖tftp.h头文件
 tftpd.o tftpsubs.o: tftp.h
 
 # -------------------------------------
 # ninfod
+#生成可执行文件
 ninfod:
 	@set -e; \
 		if [ ! -f ninfod/Makefile ]; then \
@@ -217,6 +234,7 @@ ninfod:
 
 # -------------------------------------
 # modules / check-kernel are only for ancient kernels; obsolete
+#内核检查
 check-kernel:
 ifeq ($(KERNEL_INCLUDE),)
 	@echo "Please, set correct KERNEL_INCLUDE"; false
@@ -230,13 +248,15 @@ modules: check-kernel
 	$(MAKE) KERNEL_INCLUDE=$(KERNEL_INCLUDE) -C Modules
 
 # -------------------------------------
+#生成man的帮助文档
 man:
 	$(MAKE) -C doc man
-
+#生成 html的帮助文档
 html:
 	$(MAKE) -C doc html
 
 clean:
+#删除所有.o文件   
 	@rm -f *.o $(TARGETS)
 	@$(MAKE) -C Modules clean
 	@$(MAKE) -C doc clean
@@ -245,6 +265,7 @@ clean:
 			$(MAKE) -C ninfod clean; \
 		fi
 
+#清除ninfod目录下所有生成的文件
 distclean: clean
 	@set -e; \
 		if [ -f ninfod/Makefile ]; then \
