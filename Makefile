@@ -29,8 +29,11 @@ LDFLAG_SYSFS=-lsysfs
 
 # Capability support (with libcap) [yes|static|no]
 #变量定义，设置开关
+# 使用libcap支持
 USE_CAP=yes
+
 # sysfs support (with libsysfs - deprecated) [no|yes|static]
+#
 USE_SYSFS=no
 # IDN support (experimental) [no|yes|static]
 USE_IDN=no
