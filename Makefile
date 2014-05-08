@@ -42,7 +42,7 @@ WITHOUT_IFADDRS=no
 #发送arp请求到默认设备
 # arping default device (e.g. eth0) []
 ARPING_DEFAULT_DEVICE=
-#使用GNUTLS图书馆实现安全通信
+#使用GNUTLS实现安全通信
 # GNU TLS library for ping6 [yes|no|static]
 USE_GNUTLS=yes
 #共享加密库
