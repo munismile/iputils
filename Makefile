@@ -25,30 +25,33 @@ LDFLAG_SYSFS=-lsysfs
 #“#”字符后的内容被作为是注释内容（和shell脚本一样）处理。如果此行的第一个非空字符为"#"，那么此行为注释行，注释行的结尾如果存在反斜线（\），那么下一行也被作为注释行。一般在书写Makefile时推荐将注释作为一个独立的行，而不要和Makefile的有效行放在一行中书写。当在Makefile中需要使用字符"#"时，可以使用反斜线加"#"（\#）来实现，其表示将"#"作为一字符而不是注释的开始标志。
 #
 # Options
-#
 
-# Capability support (with libcap) [yes|static|no]
 #变量定义，设置开关
 # 使用libcap支持
+# Capability support (with libcap) [yes|static|no]
 USE_CAP=yes
-
+#不使用sysfs（虚拟文件系统）的支持，
 # sysfs support (with libsysfs - deprecated) [no|yes|static]
-#
 USE_SYSFS=no
+#不使用IDN（国际化域名）
 # IDN support (experimental) [no|yes|static]
 USE_IDN=no
-
+#不使用IFADDRS
 # Do not use getifaddrs [no|yes|static]
 WITHOUT_IFADDRS=no
+#发送arp请求到默认设备
 # arping default device (e.g. eth0) []
 ARPING_DEFAULT_DEVICE=
-
+#使用GNUTLS图书馆实现安全通信
 # GNU TLS library for ping6 [yes|no|static]
 USE_GNUTLS=yes
+#共享加密库
 # Crypto library for ping6 [shared|static]
 USE_CRYPTO=shared
+#使用解析库
 # Resolv library for ping6 [yes|static]
 USE_RESOLV=yes
+#ping6：ipV6中的网络测试命令，这里的意思不使用ping6的路由资源
 # ping6 source routing (deprecated by RFC5095) [no|yes|RFC3542]
 ENABLE_PING6_RTHDR=no
 
